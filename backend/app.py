@@ -29,12 +29,8 @@ socketio.on_event('place', socket_router.place)
 def run():
     """This function starts the entire backend server"""
     # Try writing to redis
-    try:
-        redis.set("test", "test")
-        redis.get("test")
-    except redis.exceptions.ConnectionError:
-        raise Exception("Redis is not running")
-
+    redis.set("test", "test")
+    redis.get("test")
 
     debug = os.getenv("DEBUG", "false") == "true"
     port = int(os.getenv("PORT", "8000"))
