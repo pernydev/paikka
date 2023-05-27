@@ -6,6 +6,10 @@ import os
 from flask import Flask
 from flask_socketio import SocketIO
 from backend import socket_router
+from backend.databases import get_mongo_db, get_redis_db
+
+mongo = get_mongo_db()
+redis = get_redis_db()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '23oip9hn9+3r42uy89e43qh43wt98ht240j+89yu43+98fj'
@@ -24,6 +28,14 @@ socketio.on_event('place', socket_router.place)
 
 def run():
     """This function starts the entire backend server"""
+    # Try writing to redis
+    try:
+        redis.set("test", "test")
+        redis.get("test")
+    except redis.exceptions.ConnectionError:
+        raise Exception("Redis is not running")
+
+
     debug = os.getenv("DEBUG", "false") == "true"
     port = int(os.getenv("PORT", "8000"))
     socketio.run(app, debug=debug, port=port)
