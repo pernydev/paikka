@@ -1,9 +1,11 @@
 """
 Main file containing all the REST API endpoints and starting the server.
 Socketio is handled in the socketio.py file.
+
+Also serves the frontend endpoint.
 """
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_socketio import SocketIO
 from backend import socket_router
 from backend.databases import get_mongo_db, get_redis_db
@@ -18,8 +20,8 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route('/')
 def index():
-    """Just a test endpoint"""
-    return "Hello World!"
+    """Serve the only publicly available endpoint, the frontend"""
+    return render_template('base.html')
 
 
 socketio.on_event('connect', socket_router.connect)
@@ -32,6 +34,6 @@ def run():
     redis.set("test", "test")
     redis.get("test")
 
-    debug = os.getenv("DEBUG", "false") == "true"
-    port = int(os.getenv("PORT", "8000"))
+    debug = os.getenv("DEBUG") == "true"
+    port = int(os.getenv("PORT"))
     socketio.run(app, debug=debug, port=port)
